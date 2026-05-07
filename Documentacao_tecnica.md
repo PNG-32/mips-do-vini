@@ -2,19 +2,19 @@
 
 ### 1 - Processador MIPs (Ciclo Único)
 
-Projeto:  mips
+**Projeto :**  mips 
 
-Ferramenta:  Logisim 2.7.1
+**Ferramenta:**  Logisim 2.7.1
 
-Arquitetura: MIPS ciclo único (single-cycle) 
+**Arquitetura:** MIPS ciclo único (single-cycle) 
 
-Largura dos dados: 8 bits 
+**Largura dos dados:** 8 bits 
 
-Largura da instrução de memória: 18 bits 
+**Largura da instrução de memória:** 18 bits 
 
-Subcircuitos utilizados:  Banco de Registradores, ULA, Unidade de Controle, Controle ULA 
+**Subcircuitos utilizados:**  Banco de Registradores, ULA, Unidade de Controle, Controle ULA 
 
-Tipo do circuito: Datapath completo com elementos sequenciais e combinacionais 
+**Tipo do circuito:** Datapath completo com elementos sequenciais e combinacionais 
 
 <br>     
 
