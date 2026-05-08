@@ -1,24 +1,25 @@
 ### DOCUMENTAÇÃO TÉCNICA
 
+<br>
+
 
 ### 1 - Processador MIPS (Ciclo Único)
 
+<br>
 
 ### 1.1 - Identificação do Componente
 
-**Projeto :**  mips.circ
+<br>
 
-**Ferramenta:**  Logisim 2.7.1
-
-**Arquitetura:** MIPS ciclo único (single-cycle) 
-
-**Largura dos dados:** 8 bits 
-
-**Largura da instrução de memória:** 18 bits 
-
-**Subcircuitos utilizados:**  Banco de Registradores, ULA, Unidade de Controle, Controle ULA 
-
-**Tipo do circuito:** Datapath completo com elementos sequenciais e combinacionais 
+| Campo | Informação |
+|-------|-------------|
+| **Projeto** | mips.circ  |
+| **Ferramenta de simulaçâo** | Logisim 2.7.1 |
+| **Arquitetura** | MIPS ciclo único (single-cycle) |
+| **Largura de dados** | 8 bits |
+| **Largura de instrução de memóri** | 18 bits |
+| **Subcircuitos utilizados** | Banco de registradores, ULA, Unidade de Controle, Controle ULA |
+| **Tipo de circuito** | Datapath completo com elementos sequenciais e combinacionais |
 
 <br>     
 
@@ -262,7 +263,7 @@ Um multiplexador de 8 entradas x 8 bits recebe os resultados de todas as unidade
 | 110 | Deslocador esquerda |
 | 111 | Deslocador direita |
 
-#### 3.4 - Saida auxiliar — flag Igual
+###  3.4 - Saida auxiliar — flag Igual
 
 Alem do resultado R, a ULA produz um sinal adicional chamado Igual (1 bit) que indica se os operandos A e B são iguais. Este sinal é gerado por um circuito comparador de igualdade independente, que não depende do valor de Funcao e opera em paralelo às demais operações.
 
@@ -271,7 +272,7 @@ Alem do resultado R, a ULA produz um sinal adicional chamado Igual (1 bit) que i
 
 Este sinal e utilizado pelo bloco principal (main) para a instrucao de branch condicional (BEQ - branch if equal). Quando o sinal Branch da Unidade de Controle está ativo e Igual = 1, o desvio é tomado. A vantagem de ter um sinal de igualdade separado é que a ULA não precisa executar uma subtração para fazer a comparação, o que poderia alterar o resultado R em casos onde a operação selecionada não é SUB.
 
-### 3.5 - Portas de Interface
+###   3.5 - Portas de Interface
 
 | Porta | Largura (bits) | Direcao | Descricao |
 |-------|----------------|---------|-----------|
@@ -735,9 +736,9 @@ O periodo de clock deve ser maior ou igual a soma dos atrasos de todos esses com
 | **Reset (CLEAR)** | Ativo em alto | Zera PC e todos os registradores |
 | **Instrucao** | 18 bits | Mais larga que os dados (8 bits) |
 
-### 9. Observacoes de Implementacao
+### 11 - Observacoes de Implementacao
 
-#### 9.1 Diferencas do MIPS padrao
+#### 11.1 - Diferencas do MIPS padrao
 
 Esta implementacao didatica apresenta as seguintes simplificacoes em relacao ao MIPS padrao (32 bits):
 
@@ -753,7 +754,7 @@ Esta implementacao didatica apresenta as seguintes simplificacoes em relacao ao 
 | Registrador $zero | hardwired para 0 | nao implementado (R0 pode ser escrito) |
 | Deslocamento (shift) | variavel (shamt de 5 bits) | fixo em 1 bit (shamt ignorado) |
 
-#### 9.2 Sinal contRT (conteudo de rt)
+#### 11.2 - Sinal contRT (conteudo de rt)
 
 O sinal identificado no circuito como **contRT** e simplesmente o valor de Read data 2 do Banco de Registradores, ou seja, o conteudo do registrador apontado pelo campo rt da instrucao. Este sinal e roteado para:
 - Entrada do MUX ALUSrc (que pode encaminha-lo para a ULA)
@@ -761,11 +762,11 @@ O sinal identificado no circuito como **contRT** e simplesmente o valor de Read 
 
 Nao se trata de um sinal de controle, mas sim de um dado que trafega pelo datapath.
 
-#### 9.3 Campo shamt
+#### 11.3 - Campo shamt
 
 Embora o campo shamt (3 bits) esteja presente no formato R, a implementacao atual da ULA ignora este valor, realizando sempre deslocamento de 1 posicao para as instrucoes sll e srl. Uma melhoria futura seria conectar o campo shamt ao bloco de deslocamento para permitir deslocamentos variaveis de 0 a 7 posicoes.
 
-#### 9.4 Verificacao e Testes
+#### 11.4 -  Verificacao e Testes
 
 Para testar o processador, recomenda-se:
 1. Carregar um programa simples na Memoria de Instrucoes (ex: soma de dois numeros)
@@ -774,7 +775,7 @@ Para testar o processador, recomenda-se:
 4. Habilitar o clock (passo a passo via "Tick" no Logisim)
 5. Observar a execucao instrucao por instrucao, verificando os valores dos registradores e da memoria
 
-#### 9.5 Possiveis Aprimoramentos
+#### 12 -  Possiveis Aprimoramentos
 
 - Implementar o registrador `$zero` (R0 permanentemente zero)
 - Conectar o campo shamt ao deslocador da ULA
