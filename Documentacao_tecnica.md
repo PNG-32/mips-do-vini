@@ -1,8 +1,12 @@
 ### DOCUMENTAÇÃO TÉCNICA
 
-### 1 - Processador MIPs (Ciclo Único)
 
-**Projeto :**  mips 
+### 1 - Processador MIPS (Ciclo Único)
+
+
+### 1.1 - Identificação do Componente
+
+**Projeto :**  mips.circ
 
 **Ferramenta:**  Logisim 2.7.1
 
@@ -20,23 +24,23 @@
 
 
 
-### 1.2 - Visao Geral e Função
+### 1.2 - Visão Geral e Função
 
 O circuito main implementa o datapath completo do processador MIPS ciclo único, integrando todos os subcircuitos documentados a seguir (Banco de Registradores, ULA, Unidade de Controle, Controle ULA).
 Em um processador ciclo único, cada instrução é executada integralmente em um único ciclo de clock. Isto significa que todos os estágios do datapath (busca da instrução, decodificação, leitura de registradores, execução na ULA, acesso à memória e escrita de resultado) devem ser concluídos dentro do mesmo período de clock. 
 
 
-\
+
 ### 2 - Banco de Registradores
 
 
-### 2.1 - Identificacao do Componente
+### 2.1 - Identificaçâo do Componente
 
 | Campo | Informação |
 |-------|-------------|
 | **Nome do subcircuito** | Banco de Registradores |
-| **Projeto pai** | mips  |
-| **Ferramenta de simulacao** | Logisim (logisim 2.7.1 |
+| **Projeto** | mips.circ  |
+| **Ferramenta de simulaçâo** | Logisim (logisim 2.7.1 |
 | **Arquitetura** | MIPS ciclo unico (single-cycle) |
 | **Numero de registradores** | 8 registradores de uso geral (R0 a R7) |
 | **Largura dos dados** | 8 bits por registrador |
@@ -47,17 +51,17 @@ Em um processador ciclo único, cada instrução é executada integralmente em u
 
 ### 2.2- Visão Geral e Função
 
-O Banco de Registradores é o componente responsavel por armazenar e disponibilizar os valores dos registradores de uso geral do processador MIPS. Em um processador ciclo unico, este bloco e acessado diretamente pelo datapath a cada ciclo de clock, provendo os operandos para a ULA e recebendo o resultado das instrucoes do tipo R ou das operacoes de load.
-O subcircuito implementa as seguintes funcoes principais:
+O Banco de Registradores é o componente responsável por armazenar e disponibilizar os valores dos registradores de uso geral do processador MIPS. Em um processador ciclo único, este bloco e acessado diretamente pelo datapath a cada ciclo de clock, provendo os operandos para a ULA e recebendo o resultado das instrucçôes do tipo R ou das operaçôes de load.
+O subcircuito implementa as seguintes funçôes principais:
 - Leitura combinacional de dois registradores simultaneamente (Read data 1 e Read data 2), sem necessidade de sinal de controle habilitador. Isso significa que, assim que os endereços de leitura (rs e rt) são fornecidos, os valores dos registradores correspondentes aparecem imediatamente nas saídas, sem aguardar o clock.
 - Escrita síncrona em um registrador selecionado, condicionada ao sinal de controle RegWrite e sincronizada com a borda de subida do clock (CLOCK). Apenas quando RegWrite está em nível lógico 1 e ocorre uma borda de subida do clock, o dado presente em Write data é armazenado no registrador apontado por Write register.
 - Reset assíncrono de todos os registradores atraves do sinal CLEAR. Diferente da escrita, o reset não depende do clock: sempre que CLEAR for ativado (nível lógico 1), todos os registradores são imediatamente zerados.
-- Decodificacao interna dos enderecos de leitura e escrita por meio de multiplexadores e demultiplexadores de 3 bits, permitindo a seleção eficiente dos 8 registradores disponíveis.
+- Decodificacao interna dos endereços de leitura e escrita por meio de multiplexadores e demultiplexadores de 3 bits, permitindo a seleção eficiente dos 8 registradores disponíveis.
 
 ### 2.3 - Arquitetura Interna
 
  Registradores de armazenamento
-O bloco e composto por 8 flip-flops do tipo D com enable (WE - Write Enable), cada um com largura de 8 bits. Os registradores sao identificados de Reg0 a Reg7. Cada registrador possui:
+O bloco é composto por 8 flip-flops do tipo D com enable (WE - Write Enable), cada um com largura de 8 bits. Os registradores sâo identificados de Reg0 a Reg7. Cada registrador possui:
 - Entrada D: recebe o dado de Write data (8 bits) quando habilitado.
 - Saida Q: disponibiliza o valor armazenado permanentemente para os multiplexadores de leitura.
 - Entrada de enable WEn (onde n = 0..7): habilita a escrita quando ativo. Apenas um WEn e ativado por vez, garantindo que apenas um registrador seja modificado a cada ciclo de escrita.
@@ -66,9 +70,9 @@ O bloco e composto por 8 flip-flops do tipo D com enable (WE - Write Enable), ca
 Caminho de escrita
 O caminho de escrita e composto por dois estagios de decodificacao em cascata:
 Estagio 1 - Decodificador do endereço de escrita (DMX 1:8)
-O sinal Write register (3 bits) alimenta um demultiplexador (DMX) de 1 para 8. Este DMX propaga um nivel logico '1' para a saida correspondente ao endereco binario codificado em Write register. As saidas sao denominadas WE0 a WE7 e representam a selecao do registrador de destino.
+O sinal Write register (3 bits) alimenta um demultiplexador (DMX) de 1 para 8. Este DMX propaga um nivel logico '1' para a saida correspondente ao endereco binario codificado em Write register. As saidas sao denominadas WE0 a WE7 e representam a seleçâo do registrador de destino.
 
-Estagio 2 - Mascaramento por RegWrite (porta AND)
+Estágio 2 - Mascaramento por RegWrite (porta AND)
 O sinal RegWrite e combinado (via porta AND) com cada uma das saidas WE0 a WE7. Somente quando RegWrite = 1 a saida WEn correspondente ao registrador selecionado e propagada como nivel alto, efetivamente habilitando a escrita no flip-flop D daquele registrador. Quando RegWrite = 0, todas as saidas WEn permanecem em nivel baixo, impedindo qualquer escrita, independentemente do valor de Write register.
 
 Essa arquitetura em cascata garante que apenas um registrador seja escrito por ciclo e somente quando explicitamente autorizado pelo sinal de controle RegWrite. A combinação do demultiplexador com as portas AND cria uma estrutura segura e eficiente para o controle de escrita.
@@ -83,7 +87,7 @@ A leitura e puramente combinacional: qualquer alteracao nos sinais de selecao se
 
 ### 2.4 - Portas de Interface
 
-| Porta | Largura (bits) | Direcao | Descricao |
+| Porta | Largura (bits) | Direção | Descrição |
 |-------|----------------|---------|-----------|
 | **Read register 1** | 3 | Entrada | Endereco do registrador a ser lido pela porta 1 (campo rs da instrucao) |
 | **Read register 2** | 3 | Entrada | Endereco do registrador a ser lido pela porta 2 (campo rt da instrucao) |
@@ -95,18 +99,18 @@ A leitura e puramente combinacional: qualquer alteracao nos sinais de selecao se
 | **Read data 1** | 8 | Saida | Valor do registrador apontado por Read register 1 (conteudo de rs) |
 | **Read data 2** | 8 | Saida | Valor do registrador apontado por Read register 2 (conteudo de rt, também chamado de contRT) |
 
-### 2.5 -  Descricao do Comportamento
+### 2.5 -  Descrição do Comportamento
 
- ### Operacao de leitura
+ ### Operação de leitura
 
 A leitura e assincrona e ocorre a qualquer momento, independentemente do clock:
 - Read data 1 = Reg[Read register 1]
 - Read data 2 = Reg[Read register 2]
 
 Ambas as leituras podem ocorrer simultaneamente e os dois enderecos podem coincidir (leitura do mesmo registrador nas duas portas) ou diferir. Este comportamento é essencial para instruções como beq, que precisam comparar dois registradores no mesmo ciclo.
-\
-\
-\
+
+
+
 ### Operacao de escrita
 
 A escrita e sincrona e ocorre na borda de subida de CLOCK, condicionada a:
@@ -116,13 +120,13 @@ A escrita e sincrona e ocorre na borda de subida de CLOCK, condicionada a:
 
 Condicao formal: se (RegWrite == 1), entao na borda de subida de CLOCK: Reg[Write register] <- Write data.
 
-\
+
 ### Reset (CLEAR)
 
 
 Quando CLEAR = 1, todos os 8 registradores sao zerados assincronamente, independentemente do estado do clock ou do sinal RegWrite. O reset e imediato e afeta simultaneamente Reg0 a Reg7. Este sinal é tipicamente usado no inicio da simulação para garantir que o processador comece em um estado conhecido.
 
-\
+
 ### 2.6 - Sinais de Controle Relacionados
 
 O Banco de Registradores e controlado pela Unidade de Controle do processador. O sinal RegWrite e o unico sinal de controle direto; os demais sinais de enderecamento provem do campo de instrucao (bits da instrucao decodificada):
@@ -148,28 +152,28 @@ No contexto do processador MIPS ciclo unico implementado no Logisim, o Banco de 
 
 ---
 
-### 3 - Unidade Logica e Aritmetica (ULA)
+### 3 - Unidade Lógica e Aritmética (ULA)
 
 
-### 3.1 - Identificacao do Componente
+### 3.1 - Identificaçâo do Componente
 
 | Campo | Informação |
 |-------|-------------|
-| **Nome do subcircuito** | ULA (Unidade Logica e Aritmetica) |
-| **Projeto** | mips  |
+| **Nome do subcircuito** | ULA (Unidade Lógica e Aritmética) |
+| **Projeto** | mips.circ  |
 | **Ferramenta** | Logisim 2.7.1 |
-| **Arquitetura** | MIPS ciclo unico (single-cycle) |
+| **Arquitetura** | MIPS ciclo único (single-cycle) |
 | **Largura dos operandos** | 8 bits (entradas A e B) |
 | **Largura da saida** | 8 bits (resultado R) |
 | **Sinal de controle** | Funcao — 3 bits (seleciona 1 de 8 operacoes) |
 | **Operacoes suportadas** | 8: ADD, SUB, MULT, DIV, NOT, SLT, SLL, SRL |
 | **Saidas auxiliares** | Igual (flag de igualdade A == B) |
 
-### 3.2 - Visao Geral e Funcao
+### 3.2 - Visâo Geral e Função
 
-A ULA e o componente combinacional central do datapath do processador MIPS, responsavel por executar todas as operacoes aritmeticas e logicas definidas pelo conjunto de instrucoes do processador. Este projeto implementa as 8 operações mapeadas diretamente pelas instruções suportadas: add, sub, mult, div, not, slt, sll e srl.
+A ULA e o componente combinacional central do datapath do processador MIPS, responsável por executar todas as operações aritméticas e lógicas definidas pelo conjunto de instrucoes do processador. Este projeto implementa as 8 operações mapeadas diretamente pelas instruções suportadas: add, sub, mult, div, not, slt, sll e srl.
 
-Em um processador ciclo unico, a ULA opera integralmente dentro de um unico periodo de clock, sem registradores internos de pipeline. Isso significa que o resultado deve estar estável e pronto antes da próxima borda do clock, pois será usado imediatamente para escrita no Banco de Registradores ou para acesso à Memória de Dados.
+Em um processador ciclo único, a ULA opera integralmente dentro de um unico periodo de clock, sem registradores internos de pipeline. Isso significa que o resultado deve estar estável e pronto antes da próxima borda do clock, pois será usado imediatamente para escrita no Banco de Registradores ou para acesso à Memória de Dados.
 
 O subcircuito recebe dois operandos de 8 bits (A e B), um sinal de controle de 3 bits (Funcao) proveniente do bloco Controle ULA, e produz um resultado de 8 bits (R) alem do sinal de status Igual. A selecao da operacao e feita por um par de demultiplexadores (DMX) que distribuem os operandos para as unidades funcionais internas, cujas saidas sao consolidadas por um multiplexador final (MUX) que encaminha apenas o resultado relevante para a saida. Esta arquitetura permite que todas as operações sejam calculadas em paralelo a cada ciclo, mas apenas o resultado da operação selecionada é propagado para a saída.
 
@@ -447,21 +451,21 @@ Para instrucoes que nao usam determinados recursos (ex.: RegDst em store e branc
 
 ---
 
-# 5. Controle ULA
-## Documentacao Tecnica do Subcircuito
+### 5. Controle ULA
 
-### 1. Identificacao do Componente
+
+### 5.1 - Identificacao do Componente
 
 | Campo | Informação |
 |-------|-------------|
 | **Nome do subcircuito** | Controle ULA |
-| **Projeto pai** | mips (3) |
-| **Ferramenta** | Logisim (logisim.app) |
+| **Projeto** | mips.circ |
+| **Ferramenta** | Logisim 2.7.1 |
 | **Entradas** | ALUOp (2 bits), funct (3 bits) |
 | **Saida** | Funcao (3 bits) para a ULA |
 | **Tipo do circuito** | Combinacional puro |
 
-### 2. Visao Geral e Funcao
+### 5.2 - Visao Geral e Funcao
 
 O subcircuito **Controle ULA** e responsavel por gerar o sinal de selecao da operacao que a ULA deve executar. Ele recebe informacoes da **Unidade de Controle principal** (sinal ALUOp, 2 bits) e, quando necessario, o campo `funct` da instrucao (3 bits, bits 2-0 da instrução, presente apenas em instrucoes do tipo R), e produz um codigo de operacao (`Funcao`, 3 bits) que define exatamente o que a ULA deve fazer: somar, subtrair, multiplicar, dividir, negar, comparar, deslocar à esquerda ou à direita.
 
@@ -472,29 +476,9 @@ A lógica do Controle ULA é relativamente simples porque a Unidade de Controle 
 
 Esta decomposição simplifica enormemente o circuito: apenas para o caso ALUOp = 10 é necessário examinar o funct; nos demais casos, a saída é constante.
 
-### 3. Arquitetura Interna e Lógica de Operacao
 
-O Controle ULA segue uma lógica de decisão baseada nos dois sinais de entrada:
 
-```
-SE (ALUOp = 00) ENTÃO
-    Funcao = 000  (ADD)   // usado por lw, sw, addi
-SE NÃO SE (ALUOp = 01) ENTÃO
-    Funcao = 001  (SUB)   // usado por beq
-SE NÃO SE (ALUOp = 10) ENTÃO
-    // Instrução do tipo R – depende do funct
-    ESCOLHA funct (3 bits):
-        CASO 000 (add):  Funcao = 000 (ADD)
-        CASO 001 (sub):  Funcao = 001 (SUB)
-        CASO 010 (mult): Funcao = 010 (MULT)
-        CASO 011 (div):  Funcao = 011 (DIV)
-        CASO 100 (not):  Funcao = 100 (NOT)
-        CASO 101 (slt):  Funcao = 101 (SLT)
-        CASO 110 (sll):  Funcao = 110 (SLL)
-        CASO 111 (srl):  Funcao = 111 (SRL)
-```
-
-### 4. Tabela Verdade Completa
+### 5.3 - Tabela Verdade Completa
 
 | ALUOp1 | ALUOp0 | Instrucao | funct (binário, 3 bits) | Funcao (saída) | Operacao da ULA |
 |--------|--------|-----------|-------------------------|----------------|-----------------|
@@ -512,19 +496,9 @@ SE NÃO SE (ALUOp = 10) ENTÃO
 
 **Legenda:** XXX = qualquer valor (don't care)
 
-### 5. Equacoes Logicas Inferidas
 
-Para o circuito combinacional, as equações podem ser expressas como:
 
-| Funcao bit | Equação lógica |
-|------------|----------------|
-| Funcao[2] (MSB) | (ALUOp[1] . ALUOp[0]' . funct[2]) + (ALUOp[1] . ALUOp[0]' . funct[1] . funct[0]) + ... |
-| Funcao[1] | (ALUOp[1] . ALUOp[0]' . funct[1]) + (ALUOp[1] . ALUOp[0]' . funct[2]' . funct[0]) + ... |
-| Funcao[0] (LSB) | (ALUOp[1] . ALUOp[0]' . funct[0]) + (ALUOp[0]) + ... |
-
-Na prática, uma implementação mais simples no Logisim pode utilizar um pequeno decodificador para o campo funct, combinado com um multiplexador que seleciona entre os valores constantes (para ALUOp=00 e 01) e a saída do decodificador (para ALUOp=10). Esta abordagem é mais fácil de visualizar e depurar.
-
-### 6. Exemplos de Operacao
+### 5.4 - Exemplos de Operacao
 
 **Exemplo 1: Instrucao `lw R1, 2(R2)`**
 - ALUOp = 00 (Unidade de Controle identifica lw)
@@ -556,18 +530,8 @@ Na prática, uma implementação mais simples no Logisim pode utilizar um pequen
 - Funcao = 110 (SLL)
 - A ULA executa SLL (R2 << 1) e o resultado é escrito em R1 (o campo shamt é ignorado)
 
-### 7. Integracao no Processador
+### 5.5 -  Integracao no Processador
 
-```
-Unidade de Controle ──(ALUOp [1:0])──► Controle ULA
-                                              │
-Instrucao[2:0] ───────(funct [2:0])──► Controle ULA
-                                              │
-                                              ▼ (Funcao [2:0])
-                                              │
-                                              ▼
-                                            ULA
-```
 
 **Fluxo da informação:**
 1. A **Unidade de Controle principal** lê o opcode da instrução (bits 17-15)
@@ -576,19 +540,18 @@ Instrucao[2:0] ───────(funct [2:0])──► Controle ULA
 4. O Controle ULA combina essas informações e gera `Funcao` (3 bits)
 5. A ULA recebe `Funcao` e executa a operação correspondente
 
-### 8. Observacoes Importantes
+### 5.6 - Observacoes Importantes
 
-- O subcircuito e **puramente combinacional** (não possui elementos de memória/clock). Isto significa que a saída Funcao responde imediatamente a qualquer alteração nas entradas ALUOp ou funct.
+- O subcircuito é **puramente combinacional** (não possui elementos de memória/clock). Isto significa que a saída Funcao responde imediatamente a qualquer alteração nas entradas ALUOp ou funct.
 - O sinal `ALUOp = 11` não é utilizado no conjunto de instruções implementado (opcode 101 e 110 não são usados, e jmp tem ALUOp = XX).
 - Todos os 8 códigos de funct (000 a 111) são mapeados para as 8 operações da ULA, cobrindo exatamente as instruções R-type implementadas.
 - O Controle ULA não interage diretamente com o sinal `contRT` (conteúdo de rt), pois `contRT` é um dado que flui do Banco de Registradores para a ULA e Memória, não um sinal de controle.
 
 ---
+### 6 - main (Datapath Completo)
 
-5. main (Datapath Completo)
-Documentacao Tecnica do Subcircuito
 
-1. Identificacao do Componente
+### 6.1 -  Identificacao do Componente
 
 
 O datapath e responsável por:
@@ -600,11 +563,11 @@ O datapath e responsável por:
 - **Escrever o resultado** no Banco de Registradores (para instruções que escrevem)
 - **Atualizar o PC** (para sequencial, desvio condicional beq, ou salto incondicional jmp)
 
-### 3. Formatos de Instrucao (18 bits)
+### 6.2 -  Formatos de Instrucao (18 bits)
 
 A instrucao de 18 bits e decomposta em campos conforme o formato da instrucao. O processador suporta tres formatos: R (registrador), I (imediato) e J (jump).
 
-#### 3.1 Formato R
+### Formato R
 Utilizado por instrucoes que manipulam apenas registradores: add, sub, mult, div, not, slt, sll, srl.
 
 | Bits | Campo | Tamanho | Descricao |
@@ -616,7 +579,7 @@ Utilizado por instrucoes que manipulam apenas registradores: add, sub, mult, div
 | 5-3 | shamt | 3 bits | Quantidade de deslocamento (shift amount) para instrucoes sll/srl |
 | 2-0 | funct | 3 bits | Codigo da funcao (especifica a operacao: 000=add, 001=sub, 010=mult, 011=div, 100=not, 101=slt, 110=sll, 111=srl) |
 
-#### 3.2 Formato I
+### Formato I
 Utilizado por instrucoes que envolvem um valor imediato ou acesso a memoria: lw, sw, beq, addi.
 
 | Bits | Campo | Tamanho | Descricao |
@@ -627,7 +590,7 @@ Utilizado por instrucoes que envolvem um valor imediato ou acesso a memoria: lw,
 | 8 | x | 1 bit | Don't care (nao utilizado) |
 | 7-0 | address/imm | 8 bits | Endereco (para lw/sw) ou constante (para addi) ou deslocamento (para beq) |
 
-#### 3.3 Formato J
+#### Formato J
 Utilizado pela instrucao de desvio incondicional: jmp.
 
 | Bits | Campo | Tamanho | Descricao |
@@ -636,11 +599,11 @@ Utilizado pela instrucao de desvio incondicional: jmp.
 | 14-8 | xxxxxxx | 7 bits | Don't cares (nao utilizados) |
 | 7-0 | address | 8 bits | Endereco absoluto do salto |
 
-### 4. Componentes do Datapath
+### 6.3 - Componentes do Datapath
 
-O datapath completo e composto pelos seguintes componentes, interligados por barramentos de 8 bits (dados) e 3 bits (enderecos de registradores):
+O datapath completo é composto pelos seguintes componentes, interligados por barramentos de 8 bits (dados) e 3 bits (enderecos de registradores):
 
-#### 4.1 Componentes sequenciais (sincronizados pelo clock)
+#### 6.3.1 - Componentes sequenciais (sincronizados pelo clock)
 
 | Componente | Largura | Funcao |
 |------------|---------|--------|
@@ -649,7 +612,7 @@ O datapath completo e composto pelos seguintes componentes, interligados por bar
 | **Memoria de Dados** | 8 bits (dado) | RAM que armazena dados. Endereco (8 bits) fornecido pela ULA. Escrita habilitada por MemWrite, leitura habilitada por MemRead. Sincronizada pelo clock para escrita. |
 | **Banco de Registradores** | 8 registradores x 8 bits | Armazena os dados dos registradores R0 a R7. Leitura assincrona, escrita sincrona na borda do clock quando RegWrite = 1. |
 
-#### 4.2 Componentes combinacionais
+#### 6.3.2 - Componentes combinacionais
 
 | Componente | Largura | Funcao |
 |------------|---------|--------|
@@ -661,7 +624,7 @@ O datapath completo e composto pelos seguintes componentes, interligados por bar
 | **Somador de branch** | 8 bits | Soma o PC com o campo address/imm (deslocamento) para calcular o endereco alvo do desvio condicional |
 | **Gerador de endereco jump** | 8 bits | Concatena os bits superiores do PC com o campo address da instrucao J (ou simplesmente usa o campo address, dependendo da implementacao) |
 
-#### 4.3 Multiplexadores
+#### 6.3.3 -  Multiplexadores
 
 | MUX | Entradas | Saida | Controle | Funcao |
 |-----|----------|-------|----------|--------|
@@ -670,9 +633,9 @@ O datapath completo e composto pelos seguintes componentes, interligados por bar
 | **MUX MemToReg** | 0: Resultado da ULA, 1: Dado lido da Memoria de Dados | Write data do Banco de Registradores | MemToReg | Seleciona a origem do dado a ser escrito no Banco |
 | **MUX PC (3 entradas)** | 0: PC+1, 1: Endereco do branch, 2: Endereco do jump | Proximo PC | Branch+Igual, Jump | Seleciona o proximo valor do PC: sequencial, branch ou jump |
 
-### 5. Fluxo de Dados por Tipo de Instrucao
+### 7 - Fluxo de Dados por Tipo de Instrucao
 
-#### 5.1 Instrucao tipo R (ex: `add rd, rs, rt`)
+#### 7.1 Instrucao tipo R (ex: `add rd, rs, rt`)
 
 1. **Busca:** PC → Memoria de Instrucoes → instrucao (opcode=000, rs, rt, rd, shamt, funct)
 2. **Decodificacao:** Unidade de Controle recebe opcode=000 → gera RegDst=1, RegWrite=1, ALUSrc=0, ALUOp=10
@@ -686,7 +649,7 @@ O datapath completo e composto pelos seguintes componentes, interligados por bar
 9. **Escrita:** Banco de Registradores escreve Write data em rd na borda do clock
 10. **Atualizacao do PC:** MUX PC (Jump=0, Branch=0) → PC = PC + 1
 
-#### 5.2 Instrucao lw (ex: `lw rt, N(rs)`)
+#### 7.2 Instrucao lw (ex: `lw rt, N(rs)`)
 
 1. **Busca:** PC → Memoria Instrucoes → instrucao (opcode=001, rs, rt, x, address/imm=N)
 2. **Decodificacao:** Unidade de Controle → RegDst=0, RegWrite=1, ALUSrc=1, MemRead=1, MemToReg=1, ALUOp=00
@@ -700,7 +663,7 @@ O datapath completo e composto pelos seguintes componentes, interligados por bar
 10. **Escrita:** Banco de Registradores escreve dado da memoria em rt na borda do clock
 11. **Atualizacao do PC:** PC = PC + 1
 
-#### 5.3 Instrucao sw (ex: `sw rt, N(rs)`)
+#### 7.3 Instrucao sw (ex: `sw rt, N(rs)`)
 
 1. **Busca:** PC → Memoria Instrucoes → instrucao (opcode=010, rs, rt, x, address/imm=N)
 2. **Decodificacao:** Unidade de Controle → RegWrite=0, ALUSrc=1, MemWrite=1, ALUOp=00
@@ -712,7 +675,7 @@ O datapath completo e composto pelos seguintes componentes, interligados por bar
 8. **Nao ha escrita no Banco de Registradores (RegWrite=0)**
 9. **Atualizacao do PC:** PC = PC + 1
 
-#### 5.4 Instrucao beq (ex: `beq rs, rt, label`)
+#### 7.4 Instrucao beq (ex: `beq rs, rt, label`)
 
 1. **Busca:** PC → Memoria Instrucoes → instrucao (opcode=011, rs, rt, x, address/imm=deslocamento)
 2. **Decodificacao:** Unidade de Controle → ALUSrc=0, Branch=1, ALUOp=01
@@ -725,7 +688,7 @@ O datapath completo e composto pelos seguintes componentes, interligados por bar
 9. **Atualizacao do PC:** MUX PC: se tomado → endereco branch; senao → PC+1
 10. **Nao ha escrita no Banco de Registradores (RegWrite=0)**
 
-#### 5.5 Instrucao jmp (ex: `jmp endereco`)
+#### 7.5 Instrucao jmp (ex: `jmp endereco`)
 
 1. **Busca:** PC → Memoria Instrucoes → instrucao (opcode=111, xxxxxxx, address)
 2. **Decodificacao:** Unidade de Controle → Jump=1
@@ -735,29 +698,14 @@ O datapath completo e composto pelos seguintes componentes, interligados por bar
 6. **Atualizacao do PC:** MUX PC (Jump=1) → PC = endereco
 7. **Nao ha acesso a memoria, ULA ou Banco de Registradores**
 
-### 6. Caminho Critico e Temporizacao
+### 8 - Caminho Critico e Temporizacao
 
-Em um processador ciclo unico, o caminho critico determina o periodo minimo de clock. A instrucao que geralmente define o pior caso é **lw** (load word), pois utiliza quase todos os componentes:
+Em um processador ciclo unico, o caminho critico determina o periodo minimo de clock. A instrucao que geralmente define o pior caso é **lw** (load word), pois utiliza quase todos os componentes.
 
-```
-Caminho critico para lw:
-
-1. Borda do clock anterior (PC ja esta estavel)
-2. Acesso a Memoria de Instrucoes (ROM) → instrucao disponivel
-3. Propagacao pela Unidade de Controle (logica combinacional)
-4. Acesso ao Banco de Registradores (leitura combinacional de rs)
-5. Propagacao pelo extensor de sinal (imediato)
-6. Propagacao pelo MUX ALUSrc (seleciona imediato)
-7. Propagacao pelo Controle ULA (gera Funcao=000)
-8. Execucao na ULA (operacao ADD, propagacao pelo somador)
-9. Acesso a Memoria de Dados (leitura RAM)
-10. Propagacao pelo MUX MemToReg (seleciona dado da memoria)
-11. Setup time do Banco de Registradores (escrita na borda seguinte)
-```
 
 O periodo de clock deve ser maior ou igual a soma dos atrasos de todos esses componentes. Operacoes mais lentas (multiplicacao, divisao) podem aumentar o caminho critico para instrucoes R-type.
 
-### 7. Tabela de Instrucoes Suportadas
+### 9 -  Tabela de Instrucoes Suportadas
 
 | Instrucao | opcode | funct | Formato | Descricao | Exemplo |
 |-----------|--------|-------|---------|-----------|---------|
@@ -775,7 +723,7 @@ O periodo de clock deve ser maior ou igual a soma dos atrasos de todos esses com
 | addi | 100 | XXX | I | rt = rs + imm | addi R1, R2, 5 |
 | jmp | 111 | XXX | J | PC = address | jmp 0x20 |
 
-### 8. Constantes e Configuracoes do Projeto
+### 10 - Constantes e Configuracoes do Projeto
 
 | Constante | Valor | Descricao |
 |-----------|-------|-----------|
