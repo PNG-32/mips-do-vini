@@ -1,3 +1,13 @@
+
+Nomes: 
+
+
+      Acsa Santos Silva RA: 082230033
+      Geni Ap. de Carvalho RA: 082230035
+      Patrick Nathan Gomes RA: 082230021
+      Yuri Pilatis de Andrade RA: 082230038
+
+
 ### DOCUMENTAÇÃO TÉCNICA
 
 <br>
